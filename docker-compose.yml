@@ -1,0 +1,30 @@
+
+version: '3'
+services:
+  db:
+    image: postgres:13.3
+    ports:
+        - "5432:5432"
+    environment:
+        POSTGRES_PASSWORD: secretpassword
+        POSTGRES_USER: dbuser
+        POSTGRES_DB: gistsdb
+    volumes:
+        - ./db-data:/var/lib/postgresql/data
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    volumes:
+        - ./api:/app
+    ports:
+        - "8080:8080"
+  app:
+    build: ./web
+    volumes:
+        - ./web:/app
+    stdin_open: true
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    ports:
+        - "3000:3000"
